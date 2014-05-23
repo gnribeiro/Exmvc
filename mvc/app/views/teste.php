@@ -1,0 +1,1 @@
+ola <?php echo $name?> 
