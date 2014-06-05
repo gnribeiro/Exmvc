@@ -7,7 +7,7 @@ Class Controller{
 
     public function __construct() {
         $this->view = View::factory();  
-        $this->uri  = rtrim(preg_replace(array('@\?.*$@' , '#^/#'), array('' , ''), $_SERVER['REQUEST_URI']),"/");
+        $this->uri  = rtrim(preg_replace(array('@\?.*$@' , '#^/#', '@page/[\d]+@'), array('' , '', ''), $_SERVER['REQUEST_URI']),"/");
     }
 
     public function before() {
@@ -18,15 +18,17 @@ Class Controller{
        
     }
 
-    public function init( $defauld_view = 'index' , $method = 'index') {
+    public function init( $defauld_view = 'index' , $method = 'index' , $controller = 'Controller') {
         $this->defauld_view = $defauld_view;
 
         $this->before();
         
-        if(method_exists(__CLASS__, $method)){
+        if(method_exists($controller, $method)){
+
             $this->{$method}();
         }
         else{
+
            $this->index(); 
         } 
         $this->after();
@@ -46,9 +48,11 @@ Class Controller{
     }
 
     public function set_header(){
+
         $this->view->data = Helper::siteInfo();
         $this->view->head = $this->view->render('template/head');
-        
+        $this->view->breadcumbs = new Breadcumbs();
+
         return $this->view->render('template/header');
     }
 
@@ -63,6 +67,22 @@ Class Controller{
         $this->view->content = $content;
         echo $this->view->render('template/main');
         echo  $this->set_footer();
+    }
+
+
+    protected function pagination($num_pages){
+        $big = 999999999;
+        
+        $pagination = paginate_links( array(
+            'base'      => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+            'format'    => '?page=%#%',
+            'prev_text' => __( '&laquo;', 'text-domain' ),
+            'next_text' => __( '&raquo;', 'text-domain' ),
+            'total'     => $num_pages,
+            'current'   =>  max(1 , get_query_var('paged')),
+        ) );
+
+        return $pagination;
     }
 
 

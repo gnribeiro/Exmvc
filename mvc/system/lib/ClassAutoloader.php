@@ -14,17 +14,18 @@ class ClassAutoloader {
 
 
     public  function autoload($class){
-        if (is_file($file = SYSPATH . 'lib/' .str_replace(array('_', "\0"), array('/', ''), $class).'.php')) {
+        if (is_file($file     = SYSPATH . 'lib/' .str_replace(array('_', "\0"), array('/', ''), $class).'.php')) {
             @require_once $file;
         }
         elseif (is_file($file = APPPATH . 'lib/' .str_replace(array('_', "\0"), array('/', ''), $class).'.php')) {
             @require_once $file;
         }
-        elseif (is_file($file = APPPATH . 'controllers/'.str_replace(array('_', "\0"), array('/', ''), $class).'.php')) {
+        elseif (is_file($file = APPPATH . str_replace(array('_', "\0"), array('/', ''), $class).'.php')) {
             @require_once $file;
         }
         elseif (is_file($file = APPPATH . 'models/'.str_replace(array('_', "\0"), array('/', ''), $class).'.php')) {
             @require_once $file;
         }
     }
+
 }

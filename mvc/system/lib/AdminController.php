@@ -119,9 +119,11 @@ class AdminController {
           'menu_position' => 5,
           'supports'      => $supports,
           'has_archive'   => true,
+          'show_ui'       => true,
           'rewrite'       => array(
-          'slug'          => $pluralDisplayName
-        ));
+              'slug'  => $pluralDisplayName
+            )
+          );
     
         register_post_type($customPostTypeName, $args );   
     }

@@ -501,4 +501,27 @@ class Query
 
 		return $results;
 	}
+
+	/**
+	 * Compose & execute our query.
+	 *
+	 * @return array
+	 */
+	public function sql($sql = false) {
+		if(!$sql)
+			return;
+		global $wpdb;
+
+		$model  = $this->model;
+		$table  = $model::get_table();
+		$results = $wpdb->get_results($sql);
+
+		if ($results) {
+			foreach ($results as $index => $result) {
+				$results[$index] = $model::create((array) $result);
+			}
+		}
+
+		return $results;
+	}
 }

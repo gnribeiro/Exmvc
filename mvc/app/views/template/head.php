@@ -20,4 +20,5 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo THEMEURL?>apple-touch-icon-72x72-precomposed.png">
     <!-- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
     <link rel="apple-touch-icon-precomposed" href="<?php echo THEMEURL?>apple-touch-icon-precomposed.png">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <?php wp_head(); ?>

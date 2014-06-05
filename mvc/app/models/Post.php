@@ -135,6 +135,9 @@ class Post extends BaseModel
 	 * @param array $properties
 	 */
 
+
+	public $term_taxonomy_id;
+
 	public function __construct(array $properties = array())
 	{
 		global $wpdb;

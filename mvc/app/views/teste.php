@@ -1,1 +1,0 @@
-ola <?php echo $name?> 

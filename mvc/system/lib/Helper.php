@@ -11,6 +11,100 @@ class Helper {
         return self::load_file($file);
     }
 
+    public static function lang_category_slug($slug , $lang){
+       $cat     = get_category_by_slug( $slug );
+       $term_id = $cat->term_id;
+
+       $id = pll_get_term($term_id, $lang);
+
+       $cat = get_category($id);
+
+       return  $cat->slug;
+    }
+
+    
+    public static function lang_post_slug($slug , $lang){
+        global $post;
+        
+        if($id = pll_get_post($post->ID, $lang)){
+            return self::postSlug_by_ID($id);
+       }
+       else{
+        return $slug;
+       }
+    }
+
+
+    public static function get_uri(){
+        return rtrim(preg_replace(array('@\?.*$@' , '#^/#' , '@page/[\d]+@'), array('' , '', ''), $_SERVER['REQUEST_URI']) , '/');
+    }
+
+
+    public static function lang_page_slug($slug , $lang){
+ 
+       if($id  = pll_get_post( self::pageID_by_slug( $slug ), $lang)){
+            return self::pageSlug_by_ID($id);
+        }
+        else{
+            return $slug;
+        }
+    }
+
+    public static function is_categorie($slug){
+      global  $wpdb;
+
+      $slug = esc_sql($slug);
+
+      return $wpdb->get_var("SELECT count({$wpdb->terms}.term_id) from {$wpdb->terms} 
+          LEFT JOIN {$wpdb->term_taxonomy} on ({$wpdb->term_taxonomy}.term_id  = {$wpdb->terms}.term_id) 
+          WHERE  {$wpdb->terms}.slug = '{$slug}' AND {$wpdb->term_taxonomy}.taxonomy LIKE 'category' ");
+    } 
+
+
+    public static function is_post($slug){
+      global $wpdb;
+
+      $slug = esc_sql($slug);
+
+      $post_type =  $wpdb->get_var( "SELECT post_type FROM {$wpdb->posts} WHERE  post_name like '{$slug}' " );
+      
+      return ($post_type === 'post') ? true : false;
+    }
+
+    
+    public static function postID_by_slug($slug){
+      global $wpdb;
+
+      $slug = esc_sql($slug);
+  
+      return $wpdb->get_var( "SELECT ID FROM {$wpdb->posts} WHERE  post_name like '{$slug}' and post_type like 'post' " );
+    } 
+
+
+    public static function pageID_by_slug($slug){
+      global $wpdb;
+
+      $slug = esc_sql($slug);
+
+      return $wpdb->get_var( "SELECT ID FROM {$wpdb->posts} WHERE  post_name like '{$slug}' and post_type like 'page' " );
+    } 
+
+    public static function postSlug_by_ID($id){
+      global $wpdb;
+
+      $slug = esc_sql($id);
+
+      return $wpdb->get_var( "SELECT post_name FROM {$wpdb->posts} WHERE  ID = {$id} and post_type like 'post' " );
+    } 
+
+    public static function pageSlug_by_ID($id){
+      global $wpdb;
+
+      $slug = esc_sql($id);
+
+      return $wpdb->get_var( "SELECT post_name FROM {$wpdb->posts} WHERE  ID = {$id} and post_type like 'page' " );
+    }
+
     public static function siteInfo() {
         return array(
           'blog_title'  => self::getSiteTitle(),
@@ -55,8 +149,8 @@ class Helper {
     }
     
     public static function get_wp_template(){
-        if(is_single()){
-            return 'single';
+        if( is_post_type_archive()){
+            return 'postTypeArchive';
         }
         elseif(is_category()){
             return 'category';
@@ -67,18 +161,16 @@ class Helper {
         elseif(is_page()){
             return 'page';
         }
-        elseif(is_post_type_archive()){
-            return 'postTypeArchive';
+        elseif(is_single() && !is_attachment()){
+            return 'single';
         }
-        elseif(is_front_page()){
+        elseif(is_home() || is_front_page() ){
             return 'frontpage';
         }
         elseif(is_search()){
             return 'search';
         }
-        elseif(is_home()){
-            return 'home';
-        }
+
         elseif( is_tag()){
             return 'tag';
         }
